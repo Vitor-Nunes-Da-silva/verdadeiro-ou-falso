@@ -16,7 +16,6 @@
             justify-content: center;
             align-items: center;
             height: 100vh;
-            flex-direction: column;
         }
         .quiz-container {
             background: rgba(255, 255, 255, 0.95);
@@ -28,98 +27,100 @@
             animation: fadeIn 1s ease-in-out;
             color: black;
         }
-        .hidden { display: none; }
-        .character-img {
-            width: 100px;
-            height: 100px;
-            border-radius: 50%;
+        .question {
+            font-size: 26px;
+            margin-bottom: 20px;
+            font-weight: 600;
         }
-        .room-code {
+        .btn {
+            padding: 15px 35px;
             font-size: 20px;
+            margin: 10px;
+            border: none;
+            cursor: pointer;
+            border-radius: 10px;
+            transition: transform 0.2s ease, background 0.3s ease;
+            width: 100%;
             font-weight: bold;
-            margin: 10px 0;
+        }
+        .btn-true { background-color: #27ae60; color: white; }
+        .btn-false { background-color: #c0392b; color: white; }
+        .btn:hover { transform: scale(1.07); }
+        .hidden { display: none; }
+        .disabled { pointer-events: none; opacity: 0.5; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        #feedback, #score, #credits {
+            font-size: 22px;
+            font-weight: bold;
+            margin-top: 15px;
+            color: #333;
+        }
+        #credits {
+            font-size: 18px;
+            margin-top: 20px;
+            color: #2C3E50;
         }
     </style>
 </head>
 <body>
-    <div class="quiz-container" id="room-container">
-        <h2>Digite um código de sala:</h2>
-        <input type="text" id="room-code-input" placeholder="Código da Sala">
-        <button onclick="joinRoom()">Entrar</button>
-    </div>
-
-    <div class="quiz-container hidden" id="player-container">
-        <h2>Digite seu nome:</h2>
-        <input type="text" id="player-name-input" placeholder="Seu Nome">
-        <h3>Escolha um personagem:</h3>
-        <div>
-            <img src="character1.png" class="character-img" onclick="selectCharacter('character1.png')">
-            <img src="character2.png" class="character-img" onclick="selectCharacter('character2.png')">
-        </div>
-        <button onclick="startQuiz()">Iniciar</button>
-    </div>
-
-    <div class="quiz-container hidden" id="quiz-container">
-        <img id="player-character" class="character-img" src="">
+    <div class="quiz-container" id="quiz-container">
         <div id="question" class="question"></div>
-        <button id="true-btn" class="btn btn-true" onclick="checkAnswer(true)" disabled>Verdadeiro</button>
-        <button id="false-btn" class="btn btn-false" onclick="checkAnswer(false)" disabled>Falso</button>
+        <button id="true-btn" class="btn btn-true" onclick="checkAnswer(true)">Verdadeiro</button>
+        <button id="false-btn" class="btn btn-false" onclick="checkAnswer(false)">Falso</button>
         <p id="feedback" class="hidden"></p>
         <p id="score" class="hidden"></p>
         <p id="credits" class="hidden">Criado por Vitor Nunes, Maísa Lorrayne e Karoline</p>
     </div>
-    
     <script>
-        let roomCode = "";
-        let playerName = "";
-        let playerCharacter = "";
-        let currentQuestionIndex = 0;
-        let score = 0;
         const questions = [
             { text: "O aquífero Guarani é a maior reserva subterrânea de água doce do mundo.", answer: false },
-            { text: "A transposição do Rio São Francisco visa solucionar problemas hídricos em regiões do semiárido nordestino.", answer: true }
+            { text: "A transposição do Rio São Francisco visa solucionar problemas hídricos em regiões do semiárido nordestino.", answer: true },
+            { text: "A Bacia Amazônica representa mais de 50% da água doce disponível do Brasil.", answer: true },
+            { text: "As águas subterrâneas das bacias hidrográficas não são influenciadas pela poluição da superfície.", answer: false },
+            { text: "O conceito de bacia hidrográfica está relacionado ao relevo e à drenagem da água da chuva.", answer: true },
+            { text: "O fenômeno de eutrofização ocorre quando há excesso de oxigênio nos rios e lagos.", answer: false },
+            { text: "A Bacia do Rio Paraná é a segunda maior do Brasil em termos de volume de água.", answer: true },
+            { text: "Os manguezais desempenham um papel fundamental na proteção das bacias hidrográficas costeiras.", answer: true },
+            { text: "As hidrelétricas não causam nenhum impacto ambiental nas bacias hidrográficas.", answer: false },
+            { text: "A recarga dos aquíferos ocorre de forma instantânea após uma chuva intensa.", answer: false },
+            { text: "A Bacia do Rio São Francisco possui sua nascente em Minas Gerais e deságua no Oceano Atlântico.", answer: true },
+            { text: "Os rios voadores da Amazônia são fluxos de vapor d'água que influenciam o regime de chuvas em outras regiões do Brasil.", answer: true }
         ];
-
-        function joinRoom() {
-            roomCode = document.getElementById("room-code-input").value;
-            if (roomCode) {
-                document.getElementById("room-container").classList.add("hidden");
-                document.getElementById("player-container").classList.remove("hidden");
-            }
-        }
-
-        function selectCharacter(character) {
-            playerCharacter = character;
-        }
-
-        function startQuiz() {
-            playerName = document.getElementById("player-name-input").value;
-            if (playerName && playerCharacter) {
-                document.getElementById("player-container").classList.add("hidden");
-                document.getElementById("quiz-container").classList.remove("hidden");
-                document.getElementById("player-character").src = playerCharacter;
-                loadQuestion();
-            }
-        }
+        
+        let currentQuestionIndex = 0;
+        let score = 0;
+        const questionElement = document.getElementById("question");
+        const feedbackElement = document.getElementById("feedback");
+        const scoreElement = document.getElementById("score");
+        const creditsElement = document.getElementById("credits");
+        const trueButton = document.getElementById("true-btn");
+        const falseButton = document.getElementById("false-btn");
 
         function loadQuestion() {
-            document.getElementById("question").textContent = questions[currentQuestionIndex].text;
-            document.getElementById("true-btn").disabled = false;
-            document.getElementById("false-btn").disabled = false;
+            questionElement.textContent = questions[currentQuestionIndex].text;
+            feedbackElement.classList.add("hidden");
+            scoreElement.classList.add("hidden");
+            creditsElement.classList.add("hidden");
+            trueButton.classList.remove("disabled");
+            falseButton.classList.remove("disabled");
         }
 
         function checkAnswer(userAnswer) {
+            trueButton.classList.add("disabled");
+            falseButton.classList.add("disabled");
             const correct = questions[currentQuestionIndex].answer;
-            document.getElementById("true-btn").disabled = true;
-            document.getElementById("false-btn").disabled = true;
-            
             if (userAnswer === correct) {
-                document.getElementById("feedback").textContent = "Correto!";
+                feedbackElement.textContent = "Correto!";
+                feedbackElement.style.color = "green";
                 score++;
             } else {
-                document.getElementById("feedback").textContent = "Errado!";
+                feedbackElement.textContent = "Errado!";
+                feedbackElement.style.color = "red";
             }
-            document.getElementById("feedback").classList.remove("hidden");
+            feedbackElement.classList.remove("hidden");
             setTimeout(nextQuestion, 1000);
         }
 
@@ -128,12 +129,17 @@
             if (currentQuestionIndex < questions.length) {
                 loadQuestion();
             } else {
-                document.getElementById("question").textContent = "Parabéns, você concluiu o quiz!";
-                document.getElementById("score").textContent = `${playerName} acertou ${score} de ${questions.length} perguntas.`;
-                document.getElementById("score").classList.remove("hidden");
-                document.getElementById("credits").classList.remove("hidden");
+                questionElement.textContent = "Parabéns, você concluiu o quiz!";
+                feedbackElement.textContent = "Você finalizou todas as perguntas.";
+                scoreElement.textContent = `Você acertou ${score} de ${questions.length} perguntas.`;
+                scoreElement.classList.remove("hidden");
+                creditsElement.classList.remove("hidden");
+                trueButton.style.display = "none";
+                falseButton.style.display = "none";
             }
         }
+
+        loadQuestion();
     </script>
 </body>
 </html>
