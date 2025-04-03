@@ -67,8 +67,8 @@
 <body>
     <div class="quiz-container" id="quiz-container">
         <div id="question" class="question"></div>
-        <button id="true-btn" class="btn btn-true" onclick="checkAnswer(true)">Verdadeiro</button>
-        <button id="false-btn" class="btn btn-false" onclick="checkAnswer(false)">Falso</button>
+        <button id="true-btn" class="btn btn-true" onclick="checkAnswer(true)" disabled>Verdadeiro</button>
+        <button id="false-btn" class="btn btn-false" onclick="checkAnswer(false)" disabled>Falso</button>
         <p id="feedback" class="hidden"></p>
         <p id="score" class="hidden"></p>
         <p id="credits" class="hidden">Criado por Vitor Nunes, Maísa Lorrayne e Karoline</p>
@@ -103,9 +103,15 @@
             feedbackElement.classList.add("hidden");
             scoreElement.classList.add("hidden");
             creditsElement.classList.add("hidden");
+            setTimeout(() => {
+                trueButton.disabled = false;
+                falseButton.disabled = false;
+            }, 3000);
         }
 
         function checkAnswer(userAnswer) {
+            trueButton.disabled = true;
+            falseButton.disabled = true;
             const correct = questions[currentQuestionIndex].answer;
             if (userAnswer === correct) {
                 feedbackElement.textContent = "Correto!";
@@ -129,8 +135,6 @@
                 scoreElement.textContent = `Você acertou ${score} de ${questions.length} perguntas.`;
                 scoreElement.classList.remove("hidden");
                 creditsElement.classList.remove("hidden");
-                trueButton.style.display = "none";
-                falseButton.style.display = "none";
             }
         }
 
