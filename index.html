@@ -16,6 +16,7 @@
             justify-content: center;
             align-items: center;
             height: 100vh;
+            flex-direction: column;
         }
         .quiz-container {
             background: rgba(255, 255, 255, 0.95);
@@ -47,12 +48,11 @@
         .btn-false { background-color: #c0392b; color: white; }
         .btn:hover { transform: scale(1.07); }
         .hidden { display: none; }
-        .disabled { pointer-events: none; opacity: 0.6; }
         @keyframes fadeIn {
             from { opacity: 0; transform: scale(0.9); }
             to { opacity: 1; transform: scale(1); }
         }
-        #feedback, #score, #credits {
+        #feedback, #score, #credits, #ranking {
             font-size: 22px;
             font-weight: bold;
             margin-top: 15px;
@@ -63,31 +63,70 @@
             margin-top: 20px;
             color: #2C3E50;
         }
+        .avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            margin: 10px;
+            cursor: pointer;
+            border: 3px solid transparent;
+        }
+        .avatar.selected {
+            border: 3px solid #27ae60;
+        }
     </style>
 </head>
 <body>
-    <div class="quiz-container" id="quiz-container">
+    <div id="start-screen">
+        <h2>Digite seu nome:</h2>
+        <input type="text" id="player-name" placeholder="Seu nome">
+        <h3>Escolha um personagem:</h3>
+        <div id="avatar-selection">
+            <img src="avatar1.png" class="avatar" onclick="selectAvatar('avatar1.png')">
+            <img src="avatar2.png" class="avatar" onclick="selectAvatar('avatar2.png')">
+            <img src="avatar3.png" class="avatar" onclick="selectAvatar('avatar3.png')">
+        </div>
+        <button onclick="startQuiz()" class="btn">Iniciar Quiz</button>
+    </div>
+
+    <div class="quiz-container hidden" id="quiz-container">
+        <img id="player-avatar" class="avatar" src="">
+        <h2 id="player-display"></h2>
         <div id="question" class="question"></div>
         <button id="true-btn" class="btn btn-true" onclick="checkAnswer(true)">Verdadeiro</button>
         <button id="false-btn" class="btn btn-false" onclick="checkAnswer(false)">Falso</button>
         <p id="feedback" class="hidden"></p>
         <p id="score" class="hidden"></p>
         <p id="credits" class="hidden">Criado por Vitor Nunes, Maísa Lorrayne e Karoline</p>
+        <div id="ranking" class="hidden"></div>
     </div>
     <script>
+        let playerName = "";
+        let playerAvatar = "";
+        let ranking = [];
+
+        function selectAvatar(avatar) {
+            playerAvatar = avatar;
+            document.querySelectorAll('.avatar').forEach(img => img.classList.remove('selected'));
+            event.target.classList.add('selected');
+        }
+
+        function startQuiz() {
+            playerName = document.getElementById("player-name").value;
+            if (!playerName || !playerAvatar) {
+                alert("Por favor, digite seu nome e escolha um personagem.");
+                return;
+            }
+            document.getElementById("start-screen").classList.add("hidden");
+            document.getElementById("quiz-container").classList.remove("hidden");
+            document.getElementById("player-display").textContent = playerName;
+            document.getElementById("player-avatar").src = playerAvatar;
+            loadQuestion();
+        }
+
         const questions = [
             { text: "O aquífero Guarani é a maior reserva subterrânea de água doce do mundo.", answer: false },
             { text: "A transposição do Rio São Francisco visa solucionar problemas hídricos em regiões do semiárido nordestino.", answer: true },
-            { text: "A Bacia Amazônica representa mais de 50% da água doce disponível do Brasil.", answer: true },
-            { text: "As águas subterrâneas das bacias hidrográficas não são influenciadas pela poluição da superfície.", answer: false },
-            { text: "O conceito de bacia hidrográfica está relacionado ao relevo e à drenagem da água da chuva.", answer: true },
-            { text: "O fenômeno de eutrofização ocorre quando há excesso de oxigênio nos rios e lagos.", answer: false },
-            { text: "A Bacia do Rio Paraná é a segunda maior do Brasil em termos de volume de água.", answer: true },
-            { text: "Os manguezais desempenham um papel fundamental na proteção das bacias hidrográficas costeiras.", answer: true },
-            { text: "As hidrelétricas não causam nenhum impacto ambiental nas bacias hidrográficas.", answer: false },
-            { text: "A recarga dos aquíferos ocorre de forma instantânea após uma chuva intensa.", answer: false },
-            { text: "A Bacia do Rio São Francisco possui sua nascente em Minas Gerais e deságua no Oceano Atlântico.", answer: true },
-            { text: "Os rios voadores da Amazônia são fluxos de vapor d'água que influenciam o regime de chuvas em outras regiões do Brasil.", answer: true }
         ];
         
         let currentQuestionIndex = 0;
@@ -96,21 +135,13 @@
         const feedbackElement = document.getElementById("feedback");
         const scoreElement = document.getElementById("score");
         const creditsElement = document.getElementById("credits");
-        const trueButton = document.getElementById("true-btn");
-        const falseButton = document.getElementById("false-btn");
 
         function loadQuestion() {
             questionElement.textContent = questions[currentQuestionIndex].text;
             feedbackElement.classList.add("hidden");
-            scoreElement.classList.add("hidden");
-            creditsElement.classList.add("hidden");
-            trueButton.classList.remove("disabled");
-            falseButton.classList.remove("disabled");
         }
 
         function checkAnswer(userAnswer) {
-            trueButton.classList.add("disabled");
-            falseButton.classList.add("disabled");
             const correct = questions[currentQuestionIndex].answer;
             if (userAnswer === correct) {
                 feedbackElement.textContent = "Correto!";
@@ -129,17 +160,12 @@
             if (currentQuestionIndex < questions.length) {
                 loadQuestion();
             } else {
-                questionElement.textContent = "Parabéns, você concluiu o quiz!";
-                feedbackElement.textContent = "Você finalizou todas as perguntas.";
-                scoreElement.textContent = `Você acertou ${score} de ${questions.length} perguntas.`;
-                scoreElement.classList.remove("hidden");
-                creditsElement.classList.remove("hidden");
-                trueButton.style.display = "none";
-                falseButton.style.display = "none";
+                ranking.push({ name: playerName, score: score });
+                ranking.sort((a, b) => b.score - a.score);
+                document.getElementById("ranking").innerHTML = ranking.map(p => `<p>${p.name}: ${p.score}</p>`).join('');
+                document.getElementById("ranking").classList.remove("hidden");
             }
         }
-
-        loadQuestion();
     </script>
 </body>
 </html>
