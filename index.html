@@ -3,50 +3,64 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jogo de Verdadeiro ou Falso</title>
+    <title>Quiz</title>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Poppins', sans-serif;
             text-align: center;
-            background: linear-gradient(to right, #6a11cb, #2575fc);
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
             padding: 50px;
             color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
         }
         .quiz-container {
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
-            display: inline-block;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
+            width: 90%;
+            max-width: 600px;
             animation: fadeIn 1s ease-in-out;
             color: black;
         }
         .question {
-            font-size: 22px;
+            font-size: 26px;
             margin-bottom: 20px;
-            font-weight: bold;
+            font-weight: 600;
         }
         .btn {
-            padding: 12px 24px;
-            font-size: 18px;
+            padding: 15px 35px;
+            font-size: 20px;
             margin: 10px;
             border: none;
             cursor: pointer;
-            border-radius: 5px;
+            border-radius: 10px;
             transition: transform 0.2s ease, background 0.3s ease;
+            width: 100%;
+            font-weight: bold;
         }
-        .btn-true { background-color: green; color: white; }
-        .btn-false { background-color: red; color: white; }
-        .btn:hover { transform: scale(1.1); }
+        .btn-true { background-color: #27ae60; color: white; }
+        .btn-false { background-color: #c0392b; color: white; }
+        .btn:hover { transform: scale(1.07); }
         .hidden { display: none; }
         @keyframes fadeIn {
             from { opacity: 0; transform: scale(0.9); }
             to { opacity: 1; transform: scale(1); }
         }
-        .participants {
-            margin-top: 20px;
-            font-size: 18px;
+        #feedback, #score, #credits {
+            font-size: 22px;
             font-weight: bold;
+            margin-top: 15px;
+            color: #333;
+        }
+        #credits {
+            font-size: 18px;
+            margin-top: 20px;
+            color: #2C3E50;
         }
     </style>
 </head>
@@ -57,35 +71,22 @@
         <button id="false-btn" class="btn btn-false" onclick="checkAnswer(false)">Falso</button>
         <p id="feedback" class="hidden"></p>
         <p id="score" class="hidden"></p>
-        <div id="participants" class="participants hidden">
-            <p>Participantes:</p>
-            <ul>
-                <li>Vitor Nunes</li>
-                <li>Maísa Lorrayne</li>
-                <li>Luiz Gustavo</li>
-                <li>Pietro</li>
-                <li>Karoline</li>
-                <li>Thiago</li>
-                <li>Thaís</li>
-            </ul>
-        </div>
+        <p id="credits" class="hidden">Criado por Vitor Nunes, Maísa Lorrayne e Karoline</p>
     </div>
     <script>
         const questions = [
-            { text: "O Brasil possui a maior bacia hidrográfica do mundo.", answer: true },
-            { text: "As bacias hidrográficas não incluem lagos, apenas rios.", answer: false },
-            { text: "A bacia Amazônica cobre vários países além do Brasil.", answer: true },
-            { text: "O divisor de águas separa diferentes bacias hidrográficas.", answer: true },
-            { text: "Todas as bacias hidrográficas do Brasil deságuam no oceano Atlântico.", answer: false },
-            { text: "A Bacia do São Francisco passa por cinco estados brasileiros.", answer: true },
-            { text: "As bacias hidrográficas são sempre menores que os rios que as compõem.", answer: false },
-            { text: "A Bacia Platina é a segunda maior bacia hidrográfica da América do Sul.", answer: true },
-            { text: "A poluição de um rio afeta toda a bacia hidrográfica.", answer: true },
-            { text: "O Pantanal depende da Bacia do Paraguai.", answer: true },
-            { text: "O Rio Amazonas é o mais extenso do Brasil.", answer: false },
-            { text: "A Bacia do Tocantins-Araguaia está localizada no Sudeste do Brasil.", answer: false },
-            { text: "A água da chuva contribui para a formação das bacias hidrográficas.", answer: true },
-            { text: "A Bacia do Rio Paraná é compartilhada com outros países da América do Sul.", answer: true }
+            { text: "O aquífero Guarani é a maior reserva subterrânea de água doce do mundo.", answer: false },
+            { text: "A transposição do Rio São Francisco visa solucionar problemas hídricos em regiões do semiárido nordestino.", answer: true },
+            { text: "A Bacia Amazônica representa mais de 50% da água doce disponível do Brasil.", answer: true },
+            { text: "As águas subterrâneas das bacias hidrográficas não são influenciadas pela poluição da superfície.", answer: false },
+            { text: "O conceito de bacia hidrográfica está relacionado ao relevo e à drenagem da água da chuva.", answer: true },
+            { text: "O fenômeno de eutrofização ocorre quando há excesso de oxigênio nos rios e lagos.", answer: false },
+            { text: "A Bacia do Rio Paraná é a segunda maior do Brasil em termos de volume de água.", answer: true },
+            { text: "Os manguezais desempenham um papel fundamental na proteção das bacias hidrográficas costeiras.", answer: true },
+            { text: "As hidrelétricas não causam nenhum impacto ambiental nas bacias hidrográficas.", answer: false },
+            { text: "A recarga dos aquíferos ocorre de forma instantânea após uma chuva intensa.", answer: false },
+            { text: "A Bacia do Rio São Francisco possui sua nascente em Minas Gerais e deságua no Oceano Atlântico.", answer: true },
+            { text: "Os rios voadores da Amazônia são fluxos de vapor d'água que influenciam o regime de chuvas em outras regiões do Brasil.", answer: true }
         ];
         
         let currentQuestionIndex = 0;
@@ -93,18 +94,15 @@
         const questionElement = document.getElementById("question");
         const feedbackElement = document.getElementById("feedback");
         const scoreElement = document.getElementById("score");
+        const creditsElement = document.getElementById("credits");
         const trueButton = document.getElementById("true-btn");
         const falseButton = document.getElementById("false-btn");
-        const quizContainer = document.getElementById("quiz-container");
-        const participantsElement = document.getElementById("participants");
 
         function loadQuestion() {
             questionElement.textContent = questions[currentQuestionIndex].text;
             feedbackElement.classList.add("hidden");
             scoreElement.classList.add("hidden");
-            trueButton.classList.remove("hidden");
-            falseButton.classList.remove("hidden");
-            participantsElement.classList.add("hidden");
+            creditsElement.classList.add("hidden");
         }
 
         function checkAnswer(userAnswer) {
@@ -126,13 +124,13 @@
             if (currentQuestionIndex < questions.length) {
                 loadQuestion();
             } else {
-                questionElement.textContent = "Fim do jogo!";
-                feedbackElement.textContent = "Você completou todas as perguntas.";
+                questionElement.textContent = "Parabéns, você concluiu o quiz!";
+                feedbackElement.textContent = "Você finalizou todas as perguntas.";
                 scoreElement.textContent = `Você acertou ${score} de ${questions.length} perguntas.`;
                 scoreElement.classList.remove("hidden");
+                creditsElement.classList.remove("hidden");
                 trueButton.style.display = "none";
                 falseButton.style.display = "none";
-                participantsElement.classList.remove("hidden");
             }
         }
 
