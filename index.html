@@ -1,4 +1,5 @@
-<!DOCTYPE html><html lang="pt-BR">
+<!DOCTYPE html>
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -55,6 +56,7 @@
         <button id="true-btn" class="btn btn-true" onclick="checkAnswer(true)">Verdadeiro</button>
         <button id="false-btn" class="btn btn-false" onclick="checkAnswer(false)">Falso</button>
         <p id="feedback" class="hidden"></p>
+        <p id="score" class="hidden"></p>
         <div id="participants" class="participants hidden">
             <p>Participantes:</p>
             <ul>
@@ -67,68 +69,74 @@
                 <li>Thaís</li>
             </ul>
         </div>
-    </div><script>
-    const questions = [
-        { text: "O Brasil possui a maior bacia hidrográfica do mundo.", answer: true },
-        { text: "As bacias hidrográficas não incluem lagos, apenas rios.", answer: false },
-        { text: "A bacia Amazônica cobre vários países além do Brasil.", answer: true },
-        { text: "O divisor de águas separa diferentes bacias hidrográficas.", answer: true },
-        { text: "Todas as bacias hidrográficas do Brasil deságuam no oceano Atlântico.", answer: false },
-        { text: "A Bacia do São Francisco passa por cinco estados brasileiros.", answer: true },
-        { text: "As bacias hidrográficas são sempre menores que os rios que as compõem.", answer: false },
-        { text: "A Bacia Platina é a segunda maior bacia hidrográfica da América do Sul.", answer: true },
-        { text: "A poluição de um rio afeta toda a bacia hidrográfica.", answer: true },
-        { text: "O Pantanal depende da Bacia do Paraguai.", answer: true },
-        { text: "O Rio Amazonas é o mais extenso do Brasil.", answer: false },
-        { text: "A Bacia do Tocantins-Araguaia está localizada no Sudeste do Brasil.", answer: false },
-        { text: "A água da chuva contribui para a formação das bacias hidrográficas.", answer: true },
-        { text: "A Bacia do Rio Paraná é compartilhada com outros países da América do Sul.", answer: true }
-    ];
-    
-    let currentQuestionIndex = 0;
-    const questionElement = document.getElementById("question");
-    const feedbackElement = document.getElementById("feedback");
-    const trueButton = document.getElementById("true-btn");
-    const falseButton = document.getElementById("false-btn");
-    const quizContainer = document.getElementById("quiz-container");
-    const participantsElement = document.getElementById("participants");
+    </div>
+    <script>
+        const questions = [
+            { text: "O Brasil possui a maior bacia hidrográfica do mundo.", answer: true },
+            { text: "As bacias hidrográficas não incluem lagos, apenas rios.", answer: false },
+            { text: "A bacia Amazônica cobre vários países além do Brasil.", answer: true },
+            { text: "O divisor de águas separa diferentes bacias hidrográficas.", answer: true },
+            { text: "Todas as bacias hidrográficas do Brasil deságuam no oceano Atlântico.", answer: false },
+            { text: "A Bacia do São Francisco passa por cinco estados brasileiros.", answer: true },
+            { text: "As bacias hidrográficas são sempre menores que os rios que as compõem.", answer: false },
+            { text: "A Bacia Platina é a segunda maior bacia hidrográfica da América do Sul.", answer: true },
+            { text: "A poluição de um rio afeta toda a bacia hidrográfica.", answer: true },
+            { text: "O Pantanal depende da Bacia do Paraguai.", answer: true },
+            { text: "O Rio Amazonas é o mais extenso do Brasil.", answer: false },
+            { text: "A Bacia do Tocantins-Araguaia está localizada no Sudeste do Brasil.", answer: false },
+            { text: "A água da chuva contribui para a formação das bacias hidrográficas.", answer: true },
+            { text: "A Bacia do Rio Paraná é compartilhada com outros países da América do Sul.", answer: true }
+        ];
+        
+        let currentQuestionIndex = 0;
+        let score = 0;
+        const questionElement = document.getElementById("question");
+        const feedbackElement = document.getElementById("feedback");
+        const scoreElement = document.getElementById("score");
+        const trueButton = document.getElementById("true-btn");
+        const falseButton = document.getElementById("false-btn");
+        const quizContainer = document.getElementById("quiz-container");
+        const participantsElement = document.getElementById("participants");
 
-    function loadQuestion() {
-        questionElement.textContent = questions[currentQuestionIndex].text;
-        feedbackElement.classList.add("hidden");
-        trueButton.classList.remove("hidden");
-        falseButton.classList.remove("hidden");
-        participantsElement.classList.add("hidden");
-    }
-
-    function checkAnswer(userAnswer) {
-        const correct = questions[currentQuestionIndex].answer;
-        if (userAnswer === correct) {
-            feedbackElement.textContent = "Correto!";
-            feedbackElement.style.color = "green";
-        } else {
-            feedbackElement.textContent = "Errado!";
-            feedbackElement.style.color = "red";
+        function loadQuestion() {
+            questionElement.textContent = questions[currentQuestionIndex].text;
+            feedbackElement.classList.add("hidden");
+            scoreElement.classList.add("hidden");
+            trueButton.classList.remove("hidden");
+            falseButton.classList.remove("hidden");
+            participantsElement.classList.add("hidden");
         }
-        feedbackElement.classList.remove("hidden");
-        setTimeout(nextQuestion, 1500);
-    }
 
-    function nextQuestion() {
-        currentQuestionIndex++;
-        if (currentQuestionIndex < questions.length) {
-            loadQuestion();
-        } else {
-            questionElement.textContent = "Fim do jogo!";
-            feedbackElement.textContent = "Você completou todas as perguntas.";
-            trueButton.style.display = "none";
-            falseButton.style.display = "none";
-            participantsElement.classList.remove("hidden");
+        function checkAnswer(userAnswer) {
+            const correct = questions[currentQuestionIndex].answer;
+            if (userAnswer === correct) {
+                feedbackElement.textContent = "Correto!";
+                feedbackElement.style.color = "green";
+                score++;
+            } else {
+                feedbackElement.textContent = "Errado!";
+                feedbackElement.style.color = "red";
+            }
+            feedbackElement.classList.remove("hidden");
+            setTimeout(nextQuestion, 1500);
         }
-    }
 
-    loadQuestion();
-</script>
+        function nextQuestion() {
+            currentQuestionIndex++;
+            if (currentQuestionIndex < questions.length) {
+                loadQuestion();
+            } else {
+                questionElement.textContent = "Fim do jogo!";
+                feedbackElement.textContent = "Você completou todas as perguntas.";
+                scoreElement.textContent = `Você acertou ${score} de ${questions.length} perguntas.`;
+                scoreElement.classList.remove("hidden");
+                trueButton.style.display = "none";
+                falseButton.style.display = "none";
+                participantsElement.classList.remove("hidden");
+            }
+        }
 
+        loadQuestion();
+    </script>
 </body>
 </html>
